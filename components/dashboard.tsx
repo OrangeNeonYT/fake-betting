@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -14,12 +14,20 @@ import {
   X,
   Zap
 } from "lucide-react";
-import { categories, mockEvents } from "@/lib/mock-events";
+import { categories, fakeEvents, mockEvents } from "@/lib/mock-events";
 import type { CategoryId, VirtualBet, VirtualEvent } from "@/types";
 
 const STARTING_TOKENS = 1000;
 
-function formatStart(iso: string) {
+function formatStart(iso: string, fakeMode = false) {
+  if (fakeMode) {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return iso;
+    const diff = date.getTime() - Date.now();
+    if (diff <= 0) return "NOW";
+    const seconds = Math.ceil(diff / 1000);
+    return seconds < 60 ? `IN ${seconds}s` : `IN ${Math.ceil(seconds / 60)}m`;
+  }
   const date = new Date(iso);
   return new Intl.DateTimeFormat("en-US", {
     weekday: "short",
@@ -31,15 +39,24 @@ function formatStart(iso: string) {
 }
 
 export default function Dashboard() {
+  const fakeClockStartedAt = Date.now();
   const [category, setCategory] = useState<CategoryId>("all");
   const [tokens, setTokens] = useState(STARTING_TOKENS);
   const [selected, setSelected] = useState<{ event: VirtualEvent; outcome: string; odds: number } | null>(null);
   const [stake, setStake] = useState(50);
   const [bets, setBets] = useState<VirtualBet[]>([]);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [fakeMode, setFakeMode] = useState(false);
+  const [resultMessage, setResultMessage] = useState("");
 
+  const activeFakeEvents = useMemo(() => fakeEvents.map((event, index) => ({
+    ...event,
+    startTime: new Date(fakeClockStartedAt + (index % 2 === 0 ? -5000 : (index + 1) * 20000)).toISOString()
+  })), []);
+  const activeEvents = fakeMode ? activeFakeEvents : mockEvents;
   const filteredEvents = useMemo(
-    () => category === "all" ? mockEvents : mockEvents.filter((event) => event.category === category),
-    [category]
+    () => category === "all" ? activeEvents : activeEvents.filter((event) => event.category === category),
+    [activeEvents, category]
   );
 
   const level = Math.max(1, Math.floor((STARTING_TOKENS - tokens + 1000) / 500));
@@ -47,6 +64,30 @@ export default function Dashboard() {
   function openBet(event: VirtualEvent, outcome: string, odds: number) {
     setStake(Math.min(50, tokens));
     setSelected({ event, outcome, odds });
+  }
+
+  function resolveFakeBet(betId: string, event: VirtualEvent) {
+    setBets((items) => {
+      const target = items.find((bet) => bet.id === betId);
+      if (!target || target.status !== "open") return items;
+
+      const winner = event.outcomes[Math.floor(Math.random() * event.outcomes.length)].name;
+      const won = target.selection === winner;
+
+      if (won) {
+        setTokens((value) => value + target.potentialReturn);
+      }
+
+      setResultMessage(won
+        ? `🎉 ${target.selection} won! +${target.potentialReturn.toLocaleString()} Tokens`
+        : `❌ ${target.selection} lost. Better luck next time.`
+      );
+      window.setTimeout(() => setResultMessage(""), 3500);
+
+      return items.map((bet) =>
+        bet.id === betId ? { ...bet, status: won ? "won" : "lost" } : bet
+      );
+    });
   }
 
   function placeBet() {
@@ -66,9 +107,23 @@ export default function Dashboard() {
     setTokens((value) => value - stake);
     setBets((items) => [bet, ...items]);
     setSelected(null);
+
+    if (fakeMode) {
+      const delay = Math.max(3, selected.event.resolveAfterSeconds ?? 7) * 1000;
+      window.setTimeout(() => resolveFakeBet(bet.id, selected.event), delay);
+    }
   }
 
+  useEffect(() => {
+    if (!fakeMode) return;
+    const timer = window.setInterval(() => {
+      setResultMessage((value) => value);
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [fakeMode]);
+
   return (
+    <>
     <div className="min-h-screen bg-[#0B0E14] text-[#F5F7FA]">
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0B0E14]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-3 md:px-6">
@@ -77,7 +132,10 @@ export default function Dashboard() {
               <Coins className="h-5 w-5 text-[#FFD700]" />
             </div>
             <div>
-              <div className="font-black tracking-tight">TOKENHOUSE</div>
+              <div className="flex items-center gap-2 font-black tracking-tight">
+              TOKENHOUSE
+              {fakeMode && <span className="rounded-full bg-[#00E676]/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#00E676]">Fake-Mode</span>}
+            </div>
               <div className="text-[10px] uppercase tracking-[0.24em] text-white/40">Virtual Sports Lounge</div>
             </div>
           </div>
@@ -140,7 +198,7 @@ export default function Dashboard() {
           </div>
           <div className="rounded-2xl border border-[#FFD700]/15 bg-[#FFD700]/5 px-4 py-3 text-sm text-white/65">
             <div className="flex items-center gap-2 font-bold text-[#FFD700]"><Gift className="h-4 w-4" /> 1,000 free Tokens to start</div>
-            <div className="mt-1 text-xs text-white/35">Simulated outcomes — for entertainment and UI prototyping.</div>
+            <div className="mt-1 text-xs text-white/35">{fakeMode ? "Fictional events resolve automatically in seconds — no waiting." : "Simulated outcomes — for entertainment and UI prototyping."}</div>
           </div>
         </section>
 
@@ -210,6 +268,16 @@ export default function Dashboard() {
       </main>
 
       <AnimatePresence>
+        {resultMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-white/10 bg-[#171D2A] px-4 py-3 text-sm font-bold shadow-2xl"
+          >
+            {resultMessage}
+          </motion.div>
+        )}
         {selected && (
           <BetModal
             selection={selected}
@@ -222,6 +290,64 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
     </div>
+    <AnimatePresence>
+      {showWelcome && (
+        <WelcomeScreen
+          onStart={() => {
+            setFakeMode(true);
+            setShowWelcome(false);
+          }}
+        />
+      )}
+    </AnimatePresence>
+    </>
+  );
+}
+
+function WelcomeScreen({ onStart }: { onStart: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] grid place-items-center bg-[#0B0E14]/95 p-5 backdrop-blur-xl"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="w-full max-w-xl rounded-3xl border border-white/10 bg-[#121722] p-7 shadow-[0_0_60px_rgba(255,215,0,0.10)] md:p-9"
+      >
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-[#FFD700]/25 bg-[#FFD700]/10 text-2xl text-[#FFD700]">◈</div>
+        <div className="mt-5 text-center text-xs font-black uppercase tracking-[0.22em] text-[#00E676]">Welcome to TokenHouse</div>
+        <h1 className="mt-3 text-center text-4xl font-black tracking-tight md:text-5xl">Ready to play?</h1>
+        <p className="mx-auto mt-3 max-w-md text-center text-sm leading-6 text-white/45">
+          Start with 1,000 virtual Tokens and test the dashboard without waiting for real event schedules.
+        </p>
+
+        <div className="mt-7 rounded-2xl border border-[#00E676]/25 bg-[#00E676]/[0.05] p-5">
+          <div className="flex items-center gap-3">
+            <div className="grid h-11 w-11 place-items-center rounded-xl bg-[#00E676]/10 text-lg">⚡</div>
+            <div>
+              <div className="font-black text-[#00E676]">FAKE-MODE</div>
+              <div className="mt-1 text-xs text-white/40">Fictional teams • instant countdowns • bets settle in seconds</div>
+            </div>
+          </div>
+          <ul className="mt-4 space-y-2 text-sm text-white/60">
+            <li>• No real money or payments</li>
+            <li>• Events use completely fictional teams and times</li>
+            <li>• Open bets automatically become Won or Lost after a few seconds</li>
+          </ul>
+        </div>
+
+        <button
+          onClick={onStart}
+          className="mt-5 w-full rounded-xl bg-[#00E676] px-4 py-4 text-base font-black text-black transition hover:brightness-110"
+        >
+          Enter Fake-Mode
+        </button>
+        <div className="mt-3 text-center text-[10px] uppercase tracking-[0.18em] text-white/25">1,000 free Tokens • Simulation only</div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -240,7 +366,7 @@ function EventCard({ event, index, onSelect }: { event: VirtualEvent; index: num
           <div className="flex items-center gap-1.5 rounded-full bg-[#00E676]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#00E676]">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00E676]" /> Live
           </div>
-        ) : <span className="text-xs text-white/30">{formatStart(event.startTime)}</span>}
+        ) : <span className="text-xs text-white/30">{formatStart(event.startTime, event.fakeMode)}</span>}
       </div>
 
       <div className="mt-5 rounded-xl bg-black/15 p-4">
