@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0B0E14;
+  --card: #121722;
+  --card-2: #171D2A;
+  --border: #252D3B;
+  --muted: #8791A3;
+  --text: #F5F7FA;
+  --green: #00E676;
+  --gold: #FFD700;
+  --red: #FF5370;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button, input { font: inherit; }
+
+.casino-glow {
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.08), 0 0 28px rgba(255, 215, 0, 0.09);
+}
+
+.green-glow {
+  box-shadow: 0 0 22px rgba(0, 230, 118, 0.17);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
