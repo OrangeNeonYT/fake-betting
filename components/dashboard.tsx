@@ -67,27 +67,28 @@ export default function Dashboard() {
   }
 
   function resolveFakeBet(betId: string, event: VirtualEvent) {
-    setBets((items) => {
-      const target = items.find((bet) => bet.id === betId);
-      if (!target || target.status !== "open") return items;
+    const target = bets.find((bet) => bet.id === betId);
+    if (!target || target.status !== "open") return;
 
-      const winner = event.outcomes[Math.floor(Math.random() * event.outcomes.length)].name;
-      const won = target.selection === winner;
+    const winner = event.outcomes[Math.floor(Math.random() * event.outcomes.length)].name;
+    const won = target.selection === winner;
 
-      if (won) {
-        setTokens((value) => value + target.potentialReturn);
-      }
+    if (won) {
+      setTokens((value) => value + target.potentialReturn);
+    }
 
-      setResultMessage(won
+    setBets((items) =>
+      items.map((bet) =>
+        bet.id === betId ? { ...bet, status: won ? "won" : "lost" } : bet
+      )
+    );
+
+    setResultMessage(
+      won
         ? `🎉 ${target.selection} won! +${target.potentialReturn.toLocaleString()} Tokens`
         : `❌ ${target.selection} lost. Better luck next time.`
-      );
-      window.setTimeout(() => setResultMessage(""), 3500);
-
-      return items.map((bet) =>
-        bet.id === betId ? { ...bet, status: won ? "won" : "lost" } : bet
-      );
-    });
+    );
+    window.setTimeout(() => setResultMessage(""), 3500);
   }
 
   function placeBet() {
@@ -113,14 +114,6 @@ export default function Dashboard() {
       window.setTimeout(() => resolveFakeBet(bet.id, selected.event), delay);
     }
   }
-
-  useEffect(() => {
-    if (!fakeMode) return;
-    const timer = window.setInterval(() => {
-      setResultMessage((value) => value);
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [fakeMode]);
 
   return (
     <>
