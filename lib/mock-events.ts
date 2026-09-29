@@ -86,3 +86,66 @@ export const mockEvents: VirtualEvent[] = [
     ]
   }
 ];
+
+export const fakeEvents: VirtualEvent[] = [
+  {
+    id: "fake-soc-001",
+    category: "soccer",
+    league: "Fake Cup — Round 1",
+    homeTeam: "Moon City FC",
+    awayTeam: "Pixel Harbor",
+    startTime: "NOW",
+    live: true,
+    score: "0 — 0",
+    fakeMode: true,
+    resolveAfterSeconds: 7,
+    outcomes: [
+      { name: "Moon City FC", price: 1.70 },
+      { name: "Pixel Harbor", price: 2.20 }
+    ]
+  },
+  {
+    id: "fake-bb-001",
+    category: "basketball",
+    league: "Neon Hoops — Demo",
+    homeTeam: "Neon Rockets",
+    awayTeam: "Metro Waves",
+    startTime: "IN 20 SECONDS",
+    fakeMode: true,
+    resolveAfterSeconds: 8,
+    outcomes: [
+      { name: "Neon Rockets", price: 1.58 },
+      { name: "Metro Waves", price: 2.48 }
+    ]
+  },
+  {
+    id: "fake-es-001",
+    category: "esports",
+    league: "Cyber Clash — Demo",
+    homeTeam: "Cyber Knights",
+    awayTeam: "Ghost Circuit",
+    startTime: "NOW",
+    live: true,
+    score: "8 — 6",
+    fakeMode: true,
+    resolveAfterSeconds: 6,
+    outcomes: [
+      { name: "Cyber Knights", price: 1.45 },
+      { name: "Ghost Circuit", price: 2.75 }
+    ]
+  },
+  {
+    id: "fake-pop-001",
+    category: "pop",
+    league: "Starlight Awards — Demo",
+    homeTeam: "Team Spotlight",
+    awayTeam: "Team Afterglow",
+    startTime: "IN 35 SECONDS",
+    fakeMode: true,
+    resolveAfterSeconds: 9,
+    outcomes: [
+      { name: "Team Spotlight", price: 1.92 },
+      { name: "Team Afterglow", price: 1.88 }
+    ]
+  }
+];
