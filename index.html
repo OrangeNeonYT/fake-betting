@@ -8,12 +8,24 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-card">
+      <div class="welcome-mark">◈</div>
+      <div class="welcome-kicker">WELCOME TO TOKENHOUSE</div>
+      <h1>Ready to play?</h1>
+      <p>Choose how you want to explore the demo. Everything uses virtual Tokens only.</p>
+      <button id="fakeModeButton" class="welcome-primary">⚡ Enter Fake-Mode</button>
+      <button id="normalModeButton" class="welcome-secondary">Browse Mock Events</button>
+      <div class="welcome-note">Fake-Mode uses fictional teams and short timers, so bets resolve in seconds instead of making you wait for real events.</div>
+    </div>
+  </div>
+
   <div class="site-shell">
     <header class="topbar">
       <div class="brand-wrap">
         <div class="brand-mark">◈</div>
         <div>
-          <div class="brand-name">TOKENHOUSE</div>
+          <div class="brand-name">TOKENHOUSE <span id="modeBadge" class="mode-badge hidden">FAKE-MODE</span></div>
           <div class="brand-sub">VIRTUAL SPORTS LOUNGE</div>
         </div>
       </div>
@@ -46,7 +58,7 @@
         </div>
         <div class="free-card">
           <div class="free-title">🎁 1,000 free Tokens to start</div>
-          <div class="free-copy">Simulated outcomes — for entertainment and UI prototyping.</div>
+          <div id="modeCopy" class="free-copy">Simulated outcomes — for entertainment and UI prototyping.</div>
         </div>
       </section>
 
