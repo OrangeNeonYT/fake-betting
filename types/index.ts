@@ -20,6 +20,8 @@ export type VirtualEvent = {
   startTime: string;
   live?: boolean;
   score?: string;
+  fakeMode?: boolean;
+  resolveAfterSeconds?: number;
   outcomes: Outcome[];
 };
 
