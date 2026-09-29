@@ -161,12 +161,12 @@ function placeBet(){
     status:"open"
   });
 
+  const eventCopy = selectedBet.event;
   closeBet();
   renderWallet();
   renderHistory();
 
   if(fakeMode){
-    const eventCopy = selectedBet.event;
     window.setTimeout(() => settleFakeBet(betId, eventCopy), 3500);
   }
 }
