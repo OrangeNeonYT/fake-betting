@@ -1,193 +1,120 @@
 # TokenHouse — Virtual Sports Lounge
 
-A fake-money sports prediction dashboard that now works as a **plain static website**.
+A reusable Next.js App Router starter for a **virtual-token sports prediction dashboard**.
 
-> **Important:** This is a virtual-token demo. It does not handle real money, deposits, withdrawals, or real-money betting.
+> This project is a simulation/UI prototype. It does not process real-money bets, deposits, or withdrawals.
 
-## 🚨 NO INSTALLS REQUIRED
+## Features
 
-For the **Neocities version**, you do NOT need:
+- Next.js App Router
+- React + TypeScript
+- Tailwind CSS
+- Framer Motion
+- Lucide icons
+- Dark premium casino-inspired UI
+- Virtual Token balance starting at 1,000
+- Soccer, basketball, esports, and pop-culture categories
+- Mock event feed
+- Optional The Odds API adapter
+- Bet placement modal and stake validation
+- Open / Won / Lost virtual bet states
+- **Fake-Mode welcome screen** with fictional events
+- Fake-Mode countdowns and automatic bet resolution in seconds
 
-- Node.js
-- npm
-- Next.js
-- a terminal
-- any downloads
+## Run locally
 
-It is just:
+### 1. Install Node.js
 
-- `index.html`
-- `style.css`
-- `script.js`
+Install the current Node.js LTS release from:
 
-You can upload those files directly to Neocities from your browser.
+https://nodejs.org/
 
----
+### 2. Clone the repository
 
-# 🌐 PUT IT ON NEOCITIES
-
-### Step 1
-
-Open this GitHub repository:
-
-**https://github.com/OrangeNeonYT/fake-betting**
-
-### Step 2
-
-Open these three files:
-
-- `index.html`
-- `style.css`
-- `script.js`
-
-Download each file using GitHub's file page.
-
-### Step 3
-
-Open your Neocities dashboard:
-
-**https://neocities.org/**
-
-Go to your site's file manager.
-
-### Step 4
-
-Upload:
-
-`index.html`
-
-`style.css`
-
-`script.js`
-
-Make sure all three are in the same folder.
-
-### Step 5
-
-Open your Neocities website.
-
-The TokenHouse dashboard should load immediately.
-
----
-
-# 🎮 WHAT WORKS IN THE STATIC VERSION?
-
-The browser-only version includes:
-
-- Premium dark UI
-- Neon green success styling
-- Gold Token styling
-- 1,000 starting Tokens
-- Token balance tracker
-- Level tracker
-- Event categories
-- Soccer
-- Basketball
-- Esports
-- Pop Culture
-- Live event indicators
-- Virtual odds
-- Bet placement modal
-- Stake validation
-- Open bet tracking
-- Potential returns
-- Recent bets
-- Hover effects
-- CSS animations
-- Responsive mobile layout
-
-Everything runs directly in the browser with regular HTML, CSS, and JavaScript.
-
----
-
-# ✏️ HOW TO EDIT IT WITHOUT INSTALLS
-
-You can edit the site entirely through GitHub.
-
-### Change the events
-
-Open:
-
-**script.js**
-
-Look for:
-
-`const events = [...] `
-
-Change the team names, categories, times, and odds there.
-
-### Change the colors/style
-
-Open:
-
-**style.css**
-
-At the top you will see:
-
-```css
---bg:#0B0E14;
---card:#121722;
---green:#00E676;
---gold:#FFD700;
+```bash
+git clone https://github.com/OrangeNeonYT/fake-betting.git
+cd fake-betting
 ```
 
-Change those hex codes to change the theme.
+### 3. Install dependencies
 
-### Change the page text/layout
+```bash
+npm install
+```
+
+### 4. Start the development server
+
+```bash
+npm run dev
+```
 
 Open:
 
-**index.html**
+```text
+http://localhost:3000
+```
 
----
+## Fake-Mode
 
-# 💰 VIRTUAL TOKENS ONLY
+The app opens with a welcome screen. Click **Enter Fake-Mode** to use fictional teams and short countdowns.
 
-This website uses fake Tokens.
+Fake-Mode is designed for demos and testing:
 
-There is:
+- Events are fictional.
+- Event times are short and update in the browser.
+- Bets automatically resolve after a few seconds.
+- Winning bets return their simulated payout.
+- Losing bets stay lost.
+- No real money is involved.
 
-- No bank account
-- No credit card
-- No deposits
-- No withdrawals
-- No real-money wagering
+## Optional event API
 
-It is a game/UI prototype.
+The project includes a server route at:
 
----
+```text
+/api/odds
+```
 
-# 📁 STATIC FILES
+To enable it, copy `.env.example` to `.env.local` and add:
+
+```env
+ODDS_API_KEY=your_key_here
+```
+
+Never commit your real API key to GitHub.
+
+The UI can still be used with mock events without an API key.
+
+## Project structure
 
 ```text
 fake-betting/
-│
-├── index.html       ← Neocities homepage
-├── style.css        ← Website design
-├── script.js        ← Website interactions
-│
-├── app/             ← Original Next.js version
-├── components/      ← Original Next.js components
-├── lib/             ← Original Next.js data/API code
-├── types/           ← Original Next.js TypeScript types
-│
+├── app/
+│   ├── api/odds/route.ts
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   └── dashboard.tsx
+├── lib/
+│   ├── mock-events.ts
+│   └── odds-api.ts
+├── types/
+│   └── index.ts
+├── .env.example
+├── .gitignore
+├── package.json
+├── postcss.config.mjs
+├── tsconfig.json
 └── README.md
 ```
 
-The **top three files** are all you need for Neocities.
+## Static / Neocities version
 
----
+Neocities cannot run the Next.js server directly.
 
-# 🧑‍💻 OPTIONAL: NEXT.JS VERSION
+A separate static HTML/CSS/JavaScript export can be made from the same design for hosts such as Neocities.
 
-The repository still contains the original Next.js version for development.
+## License
 
-That version requires Node.js and npm.
-
-You can ignore those files completely when using Neocities.
-
----
-
-# 🔗 REPOSITORY
-
-**https://github.com/OrangeNeonYT/fake-betting**
+Use and modify this starter for your own projects. Check any third-party service terms before connecting external APIs.
